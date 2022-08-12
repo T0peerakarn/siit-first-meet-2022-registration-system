@@ -32,7 +32,10 @@ def PopUpWindow(title, txt):
 
     while True:
 
-        event, values = window.read()
+        event, values = window.read(timeout = 1250)
+        
+        if event in ("__TIMEOUT__"):
+            break
 
         if event == sg.WIN_CLOSED or event == "-Back-":
             break
@@ -45,43 +48,7 @@ def checkIn(studentID, sheet):
 
 def BaanWindow(sheet):
     
-    BaanElements = [
-        [sg.Text("Enter No. and Baan: ", font = ("Futura", 30)), sg.InputText(size = (10, 1), font = ("Futura", 30), do_not_clear = False)],
-        [sg.Text("Nickname: ", font = ("Futura", 30), key = "-NICKNAME-")],
-        [sg.Text("Baan: ", font = ("Futura", 30), key = "-BAAN-")],
-        [sg.VPush()],
-        
-    ]
-    BaanLayout = [
-        [sg.VPush()],
-        [sg.Push(), sg.Column(BaanElements, element_justification = 'l'), sg.Push()],
-        [sg.Push(), sg.Column([[sg.Button("Update", font = ("Futura", 30), size = (10, 1), key = "-UPDATE-", bind_return_key = True)]], element_justification = 'l'), sg.Push()],
-        [sg.VPush()]
-    ]
-
-    window = sg.Window("Registration System", BaanLayout, size = (800, 600))
-
-    while True:
-
-        event, values = window.read()
-
-        if event == sg.WIN_CLOSED:
-            break
-
-        try:
-            no, baan = values[0].split(" ")
-        except:
-            continue
-
-        no = ('0' * (3 - len(no))) + no
-
-        if event == "-UPDATE-":
-            if no in sheet.getColumn(2):
-                window["-NICKNAME-"].update("Nickname: " + sheet.getColumn(4)[sheet.getColumn(2).index(no)])
-                window["-BAAN-"].update("Baan: " + str(baan))
-                sheet["G" + str(sheet.getColumn(2).index(no)+1)] = baan
-    
-    window.close()
+    pass
 
 
 def DisplayWindow(studentID, sheet, isStaff):
@@ -93,6 +60,7 @@ def DisplayWindow(studentID, sheet, isStaff):
             [sg.Text("Name: " + getData(studentID, sheet, 2), font = ("Futura", 30))],
             [sg.Text("Nickname: " + getData(studentID, sheet, 3), font = ("Futura", 30))],
             [sg.Text("Position: " + getData(studentID, sheet, 4), font = ("Futura", 30))],
+            [sg.Text("Remark: " + getData(studentID, sheet, 6), font = ("Futura", 30))],
             [sg.VPush()]
         ]
     else:
@@ -103,12 +71,13 @@ def DisplayWindow(studentID, sheet, isStaff):
             [sg.Text("Name: " + getData(studentID, sheet, 3), font = ("Futura", 30))],
             [sg.Text("Nickname: " + getData(studentID, sheet, 4), font = ("Futura", 30))],
             [sg.Text("T-Shirt Size: " + getData(studentID, sheet, 6), font = ("Futura", 30))],
+            [sg.Text("Remark: " + getData(studentID, sheet, 9), font = ("Futura", 30))],
             [sg.VPush()]
         ]
     displayLayout = [
         [sg.VPush()],
         [sg.Push(), sg.Column(displayElements, element_justification='l'), sg.Push()],
-        [sg.Push(), sg.Column([[sg.Button("Check-in", font = ("Futura", 30), size = (10, 1), key = "-CheckIn-")]], element_justification = 'c'), sg.Push()],
+        [sg.Push(), sg.Column([[sg.Button("Check-in", font = ("Futura", 30), size = (10, 1), key = "-CheckIn-", focus = True)]], element_justification = 'c'), sg.Push()],
         [sg.VPush()]
     ]
 
@@ -130,7 +99,7 @@ def DisplayWindow(studentID, sheet, isStaff):
 def SearchWindow(sheet, isStaff = True):
 
     searchElements = [
-        [sg.Text("Enter Student ID: ", font = ("Futura", 30)), sg.InputText(size = (10, 1), font = ("Futura", 30), do_not_clear = False)],
+        [sg.Text("Enter Student ID: ", font = ("Futura", 30)), sg.InputText(size = (10, 1), font = ("Futura", 30), do_not_clear = False, key = "-Input-")],
         [sg.VPush()],
         [sg.Button("Continue", font = ("Futura", 30), size = (10, 1), key = "-Continue-")]
     ]
@@ -140,17 +109,19 @@ def SearchWindow(sheet, isStaff = True):
         [sg.VPush()]
     ]
 
-    window = sg.Window("Registration System", searchLayout, size = (800, 600))
+    window = sg.Window("Registration System", searchLayout, size = (800, 600), finalize = True)
+    window["-Input-"].bind("<Return>", "_Enter")
 
     while True:
 
         event, values = window.read()
 
+
         if event == sg.WINDOW_CLOSED:
             break
 
-        if event == "-Continue-":
-            studentID = values[0]
+        if event == "-Continue-" or event == "-Input-" + "_Enter":
+            studentID = values["-Input-"]
 
             if len(studentID) == 10 and isExist(studentID, sheet):
 
