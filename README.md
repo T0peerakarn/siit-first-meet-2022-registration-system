@@ -2,7 +2,7 @@
 
 ## Overview
 
-The SIIT First Meet 2022 Registration Application is a user-friendly tool developed to streamline the check-in process for the event. The application allows participants to quickly register by entering their student ID, utilizing Python as the programming language, PySimpleGUI for the user interface, and Google Sheets as the database.
+The SIIT First Meet 2022 Registration Application is a user-friendly tool developed to streamline the check-in process for the event. The application allows participants to quickly register by entering their student ID, utilizing Python as the programming language, PySimpleGUI for the user interface, and Google Sheets as the database linked by ezsheet.
 
 ## Features
 
@@ -24,4 +24,5 @@ The SIIT First Meet 2022 Registration Application is a user-friendly tool develo
 ### 4. Google Sheets Database Integration
 
 - Google Sheets serves as the database for the application.
+- Connected the application to Google Sheets using ezsheet library.
 - This cloud-based solution enables easy management of participant data and ensures real-time updates.
